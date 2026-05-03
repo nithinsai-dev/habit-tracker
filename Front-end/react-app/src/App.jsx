@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Habit from './Habit.jsx'
 
 function App() {
   const [habits, setHabits] = useState([])
@@ -27,9 +28,7 @@ function App() {
       <button onClick={addHabit}>Add</button>
 
       {habits.map(habit => (
-        <div key={habit._id}>
-          <p>{habit.name}</p>
-        </div>
+        <Habit key={habit._id} name={habit.name} />
       ))}
     </div>
   )
