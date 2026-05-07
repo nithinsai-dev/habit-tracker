@@ -40,4 +40,19 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
+router.patch("/:id/complete", async (req, res) => {
+    try {
+        const habit = await Habit.findById(req.params.id);
+        habit.completed = !habit.completed;
+        if (habit.completed) {
+            habit.streak += 1;
+        }
+        await habit.save();
+        res.json(habit);
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: "server error" });
+    }
+})
+
 export default router;

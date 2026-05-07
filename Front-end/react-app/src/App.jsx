@@ -17,6 +17,16 @@ function App() {
     setName('')
   }
 
+  const addStreak = (id) => {
+    axios.patch(`http://localhost:3000/api/habits/${id}/complete`)
+      .then(res => {
+        setHabits(prev => prev.map(habit =>
+          habit._id === id ? res.data : habit
+        ))
+      })
+  }
+
+
   return (
     <div>
       <h1>Habit Tracker</h1>
@@ -28,7 +38,7 @@ function App() {
       <button onClick={addHabit}>Add</button>
 
       {habits.map(habit => (
-        <Habit key={habit._id} name={habit.name} />
+        <Habit key={habit._id} id={habit._id} name={habit.name} streak={habit.streak} onMarkDone={addStreak} completed={habit.completed} />
       ))}
     </div>
   )

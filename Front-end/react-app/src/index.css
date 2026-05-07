@@ -1,0 +1,15 @@
+.Habit {
+    background-color: rgb(88, 219, 88);
+    padding: 10px;
+    margin: 10px;
+    border: 5px solid rgb(209, 81, 241);
+    border-radius: 5px;
+}
+
+.DoneButton {
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+}
