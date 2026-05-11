@@ -108,7 +108,6 @@ App runs on `http://localhost:5173`
 | PATCH | `/api/habits/:id/complete` | Mark habit as done (once per day) |
 | DELETE | `/api/habits/:id` | Delete a habit |
 
-## How Auth Works
 
 ## Future Plans
 
