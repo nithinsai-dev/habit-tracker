@@ -1,12 +1,15 @@
 import express from "express";
 import Habit from "../models/habit.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 //Get all habits
 router.get("/", async (req, res) => {
     try {
-        const habits = await Habit.find();
+        const habits = await Habit.find({ userId: req.userId });
         res.json(habits);
     } catch (err) {
         console.log(err.message);
@@ -18,7 +21,8 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const habit = new Habit({
         name: req.body.name,
-        description: req.body.description
+        description: req.body.description,
+        userId: req.userId
     });
     try {
         await habit.save();

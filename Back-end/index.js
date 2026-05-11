@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import habitRoutes from "./routes/habit.js";
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config()
 
@@ -12,6 +13,7 @@ app.use(cors());
 const port = 3000;
 
 app.use("/api/habits", habitRoutes);
+app.use('/api/auth', authRoutes);
 
 mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log("Connected to Mongo db");
