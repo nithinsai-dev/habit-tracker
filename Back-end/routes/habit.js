@@ -17,7 +17,8 @@ router.get("/", async (req, res) => {
 //POST a new habit
 router.post("/", async (req, res) => {
     const habit = new Habit({
-        name: req.body.name
+        name: req.body.name,
+        description: req.body.description
     });
     try {
         await habit.save();
@@ -33,7 +34,6 @@ router.delete("/:id", async (req, res) => {
     try {
         await Habit.findByIdAndDelete(req.params.id);
         res.json({ message: "Habit deleted Successfully" });
-        res.redirect("/");
     } catch (err) {
         console.log(err.message);
         res.status(500).json({ message: "server error" });
@@ -43,10 +43,23 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id/complete", async (req, res) => {
     try {
         const habit = await Habit.findById(req.params.id);
-        habit.completed = !habit.completed;
-        if (habit.completed) {
-            habit.streak += 1;
+        const last = habit.lastCompletedDate;
+        const today = new Date();
+
+        //check if already done
+        const alreadyDoneToday = last &&
+            last.getDate() === today.getDate() &&
+            last.getMonth() === today.getMonth() &&
+            last.getFullYear() === today.getFullYear();
+
+        if (alreadyDoneToday) {
+            return res.status(400).json({ message: "already completed today" });
         }
+
+        habit.streak += 1;
+        habit.completed = true;
+        habit.lastCompletedDate = today;
+
         await habit.save();
         res.json(habit);
     } catch (err) {

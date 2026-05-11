@@ -1,15 +1,152 @@
-.Habit {
-    background-color: rgb(88, 219, 88);
-    padding: 10px;
-    margin: 10px;
-    border: 5px solid rgb(209, 81, 241);
-    border-radius: 5px;
+body {
+    background-color: #f0f2f5;
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
+
+#root>div {
+    width: 100%;
+    max-width: 1200px;
+}
+
+h1 {
+    color: #1a1a1a;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+input {
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    width: 500px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    margin-bottom: 15px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.Habit {
+    background-color: white;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-left: 8px solid #6366f1;
+    transition: transform 0.2s;
+}
+
+.Habit:hover {
+    transform: translateY(-3px);
+}
+
+.Habit h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #2d3748 !important;
+    text-align: left;
+}
+
+.Habit p {
+    color: #718096;
+    margin: 8px 0;
+}
+
+
 .DoneButton {
-    background-color: blue;
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    background-color: #10b981;
     color: white;
-    padding: 5px 10px;
+    padding: 10px;
     border: none;
-    border-radius: 3px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.DoneButton:hover {
+    background-color: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+
+.habit-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+}
+
+
+.Habit {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.input-section {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px
+}
+
+
+.DeleteButton {
+    top: 10px;
+    right: 10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+    margin-top: 15px;
+}
+
+.DeleteButton:hover {
+    background: #cc0000;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.addButton {
+    background-color: #6366f1;
+    color: white;
+    padding: 10px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 300px;
+}
+
+.addButton:hover {
+    background-color: hsl(239, 84%, 47%);
 }
