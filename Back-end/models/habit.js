@@ -6,6 +6,7 @@ const habitSchema = new mongoose.Schema({
     completed: { type: Boolean, default: false },
     streak: { type: Number, default: 0 },
     lastCompletedDate: { type: Date, default: null },
+    completedDates: [{ type: date }],
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

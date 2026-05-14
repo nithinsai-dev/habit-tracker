@@ -15,6 +15,17 @@ router.get("/", async (req, res) => {
         console.log(err.message);
         res.status(500).json({ message: "server error" })
     }
+});
+
+router.get("/:id", async (req, res) => {
+    try {
+        const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
+        if (!habit) return res.status(404).json({ message: "Habit Not Found" });
+        res.json(habit);
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: "Server Error" });
+    }
 })
 
 //POST a new habit
@@ -63,6 +74,7 @@ router.patch("/:id/complete", async (req, res) => {
         habit.streak += 1;
         habit.completed = true;
         habit.lastCompletedDate = today;
+        habit.completedDates.push(today);
 
         await habit.save();
         res.json(habit);
