@@ -158,3 +158,20 @@ input:focus {
     align-items: center;
     margin-bottom: 30px;
 }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(52, 12px);
+    gap: 3px;
+}
+
+.box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background-color: #ebedf0;
+}
+
+.box.completed {
+    background-color: #16a34a;
+}

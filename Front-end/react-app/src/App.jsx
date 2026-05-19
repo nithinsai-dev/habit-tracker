@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import HabitTracker from './pages/HabitTracker.jsx'
+import HabitDetail from './pages/HabitDetail.jsx'
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'))
@@ -11,6 +13,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login setToken={setToken} />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/habits/:id" element={<HabitDetail />} />
       <Route
         path="/"
         element={token ? <HabitTracker /> : <Navigate to="/login" />}

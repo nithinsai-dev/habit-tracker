@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+//Get Seperate Habits
 router.get("/:id", async (req, res) => {
     try {
         const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });

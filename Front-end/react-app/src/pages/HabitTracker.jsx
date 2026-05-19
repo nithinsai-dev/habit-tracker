@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import api from "../api/axios.js";
 import Habit from '../components/Habit.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function HabitTracker() {
     const [habits, setHabits] = useState([])
     const [name, setName] = useState('')
     const [description, setDescription] = useState('');
+    const navigate = useNavigate()
 
     useEffect(() => {
         api.get('/api/habits')
@@ -22,31 +24,6 @@ function HabitTracker() {
                 setDescription('');
             })
             .catch(err => console.error("Failed to add habit", err));
-    }
-
-    const addStreak = (id) => {
-        api.patch(`/api/habits/${id}/complete`)
-            .then(res => {
-                setHabits(prev => prev.map(habit =>
-                    habit._id === id ? res.data : habit
-                ))
-            })
-            .catch(err => {
-                if (err.response?.status === 400) {
-                    alert("Already done for today");
-                } else {
-                    console.log("Update Failed : ", err.message);
-                }
-            });
-    }
-
-
-    const deleteHabit = (id) => {
-        api.delete(`/api/habits/${id}`)
-            .then(res => {
-                setHabits(prev => prev.filter(habit => habit._id !== id));
-            })
-            .catch(err => console.log("delete failed : ", err.message));
     }
 
     const logout = () => {
@@ -78,10 +55,9 @@ function HabitTracker() {
                         id={habit._id}
                         name={habit.name}
                         streak={habit.streak}
-                        onMarkDone={addStreak}
                         completed={habit.completed}
-                        onDelete={deleteHabit}
                         description={habit.description}
+                        completedDates={habit.completedDates}
                     />
                 ))}
             </div>
