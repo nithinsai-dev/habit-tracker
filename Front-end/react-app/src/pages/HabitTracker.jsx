@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import api from "../api/axios.js";
 import Habit from '../components/Habit.jsx';
 import { useNavigate } from 'react-router-dom';
+import Footer from "../components/Footer.jsx";
 
 function HabitTracker() {
     const [habits, setHabits] = useState([])
@@ -33,6 +34,7 @@ function HabitTracker() {
 
     return (
         <div className="App">
+            <button onClick={logout} className="DeleteButton">Logout</button>
             <h1>Habit Tracker</h1>
             <div className="input-section">
                 <input
@@ -61,11 +63,12 @@ function HabitTracker() {
                     />
                 ))}
             </div>
-
-            <button onClick={logout} className="DeleteButton">Logout</button>
+            <div style={{ marginTop: "15%" }}>
+                <Footer />
+            </div>
         </div>
     )
-}
+};
 
 
 export default HabitTracker;

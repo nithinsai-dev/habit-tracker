@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
 import ContributionGrid from "../components/ContributionGrid.jsx";
+import Footer from "../components/Footer.jsx";
 
 const HabitDetail = () => {
     const { id } = useParams()
@@ -31,13 +32,26 @@ const HabitDetail = () => {
     if (!habit) return <p>Loading...</p>
 
     return (
-        <div>
-            <h1>{habit.name}</h1>
-            <p>{habit.description}</p>
-            <p>Streak: {habit.streak} 🔥</p>
-            <button onClick={markDone} className="DoneButton">Mark as Done</button>
-            <button onClick={deleteHabit} className="DeleteButton">Delete</button>
-            <ContributionGrid completedDates={habit.completedDates} />
+        <div className="detail-container">
+            <button onClick={() => navigate('/')} className="back-btn">← Back</button>
+            <div className="detail-header">
+                <h1>{habit.name}</h1>
+                <p className="detail-description">{habit.description}</p>
+                <div className="streak-display">
+                    🔥 {habit.streak} day streak
+                </div>
+            </div>
+
+            <div className="grid-section">
+                <h3>Contribution History</h3>
+                <ContributionGrid completedDates={habit.completedDates} />
+            </div>
+
+            <div className="detail-actions">
+                <button onClick={markDone} className="DoneButton">Mark as Done</button>
+                <button onClick={deleteHabit} className="DeleteButton">Delete Habit</button>
+            </div>
+            <Footer />
         </div>
     )
 }

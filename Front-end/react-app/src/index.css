@@ -4,6 +4,7 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
+    min-height: 100vh;
 }
 
 
@@ -174,4 +175,95 @@ input:focus {
 
 .box.completed {
     background-color: #16a34a;
+}
+
+.detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #6366f1;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.back-btn:hover {
+    color: hsl(239, 84%, 47%)
+}
+
+.detail-header {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    border-left: 8px solid #6366f1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+}
+
+.detail-header h1 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+    text-align: left;
+}
+
+.detail-description {
+    color: #718096;
+    font-size: 1rem;
+    margin: 0 0 15px 0;
+}
+
+.streak-display {
+    display: inline-block;
+    background: #fff7ed;
+    color: #ea580c;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 2px solid #fed7aa;
+}
+
+.grid-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    overflow-x: auto;
+}
+
+.grid-section h3 {
+    color: #2d3748;
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.detail-actions .DoneButton {
+    flex: 1;
+}
+
+.detail-actions .DeleteButton {
+    width: auto;
+    padding: 10px 25px;
+}
+
+.footer-text {
+    font-size: 15px;
+    color: grey;
+    text-align: center;
 }
