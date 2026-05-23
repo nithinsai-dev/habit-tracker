@@ -62,17 +62,29 @@ router.patch("/:id/complete", async (req, res) => {
         const last = habit.lastCompletedDate;
         const today = new Date();
 
-        //check if already done
+        // Normalize both to midnight for clean day comparison
+        const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
         const alreadyDoneToday = last &&
-            last.getDate() === today.getDate() &&
-            last.getMonth() === today.getMonth() &&
-            last.getFullYear() === today.getFullYear();
+            new Date(last.getFullYear(), last.getMonth(), last.getDate()).getTime() === todayMidnight.getTime();
 
         if (alreadyDoneToday) {
-            return res.status(400).json({ message: "already completed today" });
+            return res.status(400).json({ message: "Already completed today" });
         }
 
-        habit.streak += 1;
+        // Check if last completion was exactly yesterday
+        const yesterdayMidnight = new Date(todayMidnight);
+        yesterdayMidnight.setDate(todayMidnight.getDate() - 1);
+
+        const lastMidnight = last
+            ? new Date(last.getFullYear(), last.getMonth(), last.getDate())
+            : null;
+
+        const isConsecutive = lastMidnight &&
+            lastMidnight.getTime() === yesterdayMidnight.getTime();
+
+        // If consecutive, keep adding. If gap, reset to 1.
+        habit.streak = isConsecutive ? habit.streak + 1 : 1;
         habit.completed = true;
         habit.lastCompletedDate = today;
         habit.completedDates.push(today);
@@ -83,6 +95,6 @@ router.patch("/:id/complete", async (req, res) => {
         console.log(err.message);
         res.status(500).json({ message: "server error" });
     }
-})
+});
 
 export default router;
