@@ -59,35 +59,44 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id/complete", async (req, res) => {
     try {
         const habit = await Habit.findById(req.params.id);
-        const last = habit.lastCompletedDate;
         const today = new Date();
-
-        // Normalize both to midnight for clean day comparison
         const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-        const alreadyDoneToday = last &&
-            new Date(last.getFullYear(), last.getMonth(), last.getDate()).getTime() === todayMidnight.getTime();
+        // Check already done today
+        const alreadyDoneToday = habit.completedDates.some(date => {
+            const d = new Date(date);
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayMidnight.getTime();
+        });
 
         if (alreadyDoneToday) {
             return res.status(400).json({ message: "Already completed today" });
         }
 
-        // Check if last completion was exactly yesterday
-        const yesterdayMidnight = new Date(todayMidnight);
-        yesterdayMidnight.setDate(todayMidnight.getDate() - 1);
-
-        const lastMidnight = last
-            ? new Date(last.getFullYear(), last.getMonth(), last.getDate())
-            : null;
-
-        const isConsecutive = lastMidnight &&
-            lastMidnight.getTime() === yesterdayMidnight.getTime();
-
-        // If consecutive, keep adding. If gap, reset to 1.
-        habit.streak = isConsecutive ? habit.streak + 1 : 1;
-        habit.completed = true;
-        habit.lastCompletedDate = today;
+        // Add today
         habit.completedDates.push(today);
+        habit.lastCompletedDate = today;
+        habit.completed = true;
+
+        // Recalculate streak fresh from completedDates
+        // Get unique day timestamps, sorted descending
+        const uniqueDays = [...new Set(
+            habit.completedDates.map(date => {
+                const d = new Date(date);
+                return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+            })
+        )].sort((a, b) => b - a); // newest first
+
+        let streak = 1;
+        for (let i = 1; i < uniqueDays.length; i++) {
+            const diff = uniqueDays[i - 1] - uniqueDays[i];
+            if (diff === 86400000) { // exactly 1 day in ms
+                streak++;
+            } else {
+                break; // gap found, stop counting
+            }
+        }
+
+        habit.streak = streak;
 
         await habit.save();
         res.json(habit);

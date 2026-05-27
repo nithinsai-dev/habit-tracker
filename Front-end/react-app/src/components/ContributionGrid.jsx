@@ -1,41 +1,42 @@
 import React from "react";
 
 const ContributionGrid = (props) => {
+    const completedDates = props.completedDates || [];
     const today = new Date();
-    const days = [];
 
-    for (let i = 363; i >= 0; i--) {
-        const day = new Date(today);
-        day.setDate(today.getDate() - i);
-        days.push(day);
+    // Find the most recent Sunday (start of current week)
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + (6 - today.getDay())); // go to Saturday of this week
+
+    // Go back exactly 52 weeks from that Saturday
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 363);
+
+    // Build days from startDate to endDate
+    const days = [];
+    const current = new Date(startDate);
+    while (current <= endDate) {
+        days.push(new Date(current));
+        current.setDate(current.getDate() + 1);
     }
 
-    // Pad the beginning so day[0] starts on the right day-of-week column
-    const firstDayOfWeek = days[0].getDay(); // 0 = Sunday
-    const paddedDays = [
-        ...Array(firstDayOfWeek).fill(null), // empty cells before day[0]
-        ...days
-    ];
+    // No padding needed anymore — startDate is always a Sunday
+    // because endDate is always Saturday, going back 363 days lands on Sunday
 
     const isCompleted = (day) => {
         if (!day) return false;
-        return props.completedDates.some(date =>
-            new Date(date).toDateString() === day.toDateString()
-        );
+        return completedDates.some(date => {
+            if (!date) return false;
+            return new Date(date).toDateString() === day.toDateString();
+        });
     };
 
     return (
         <div className="grid">
-            {paddedDays.map((day, i) => (
+            {days.map((day, i) => (
                 <div
                     key={i}
-                    className={
-                        !day
-                            ? "box empty"           // padding cell
-                            : isCompleted(day)
-                                ? "box completed"
-                                : "box"
-                    }
+                    className={isCompleted(day) ? "box completed" : "box"}
                 />
             ))}
         </div>
