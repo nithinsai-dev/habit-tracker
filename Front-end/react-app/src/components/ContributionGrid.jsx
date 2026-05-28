@@ -20,9 +20,6 @@ const ContributionGrid = (props) => {
         current.setDate(current.getDate() + 1);
     }
 
-    // No padding needed anymore — startDate is always a Sunday
-    // because endDate is always Saturday, going back 363 days lands on Sunday
-
     const isCompleted = (day) => {
         if (!day) return false;
         return completedDates.some(date => {

@@ -77,8 +77,6 @@ router.patch("/:id/complete", async (req, res) => {
         habit.lastCompletedDate = today;
         habit.completed = true;
 
-        // Recalculate streak fresh from completedDates
-        // Get unique day timestamps, sorted descending
         const uniqueDays = [...new Set(
             habit.completedDates.map(date => {
                 const d = new Date(date);

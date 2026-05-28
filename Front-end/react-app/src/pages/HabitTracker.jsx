@@ -8,7 +8,8 @@ function HabitTracker() {
     const [habits, setHabits] = useState([])
     const [name, setName] = useState('')
     const [description, setDescription] = useState('');
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         api.get('/api/habits')
@@ -32,6 +33,10 @@ function HabitTracker() {
         window.location.href = '/login'  // hard reload so App re-reads localStorage
     }
 
+    const filtered = habits.filter(h =>
+        h.name.toLowerCase().includes(search.toLocaleLowerCase())
+    )
+
     return (
         <div className="App">
             <button onClick={logout} className="DeleteButton">Logout</button>
@@ -51,18 +56,29 @@ function HabitTracker() {
                 <button onClick={addHabit} className='addButton'>Add</button>
             </div>
 
-            <div className="habit-grid">
-                {habits.map(habit => (
-                    <Habit key={habit._id}
-                        id={habit._id}
-                        name={habit.name}
-                        streak={habit.streak}
-                        completed={habit.completed}
-                        description={habit.description}
-                        completedDates={habit.completedDates}
-                    />
-                ))}
+            <div className="habitGridWrapper">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="🔍 search habits"
+                    className="w-full max-w-md mx-auto block px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+
+                <div className="habit-grid">
+                    {filtered.map(habit => (
+                        <Habit key={habit._id}
+                            id={habit._id}
+                            name={habit.name}
+                            streak={habit.streak}
+                            completed={habit.completed}
+                            description={habit.description}
+                            completedDates={habit.completedDates}
+                        />
+                    ))}
+                </div>
             </div>
+
             <div style={{ marginTop: "15%" }}>
                 <Footer />
             </div>
