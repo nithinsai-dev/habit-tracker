@@ -1,6 +1,6 @@
 # Habit Tracker 🔥
 
-A full-stack habit tracking app built with the MERN stack. Track your daily habits, build streaks, and stay consistent — with each user having their own private habit list.
+A full-stack habit tracking app built with the MERN stack. Track your daily habits, build streaks, and stay consistent — with each user having their own private habit list.You can track ad see Your consistency visually in github contribution grid style.
 
 ## Features
 
@@ -55,8 +55,6 @@ habit-tracker/
         └── main.jsx
 ```
 
-## Getting Started
-
 ### Prerequisites
 
 - Node.js
@@ -92,8 +90,6 @@ npm run dev
 
 App runs on `http://localhost:5173`
 
-## API Endpoints
-
 ### Auth Routes
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -111,7 +107,6 @@ App runs on `http://localhost:5173`
 
 ## Future Plans
 
-- GitHub-style contribution grid for each habit
 - Google OAuth login
 - Edit habit name and description
 - Mobile responsive UI polish
