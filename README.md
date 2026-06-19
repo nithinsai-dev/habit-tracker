@@ -5,7 +5,7 @@ A full-stack habit tracking app built with the MERN stack. Track your daily habi
 
 ## 🚀 Live Demo
 
-🔗 **Demo:** [Add Demo Link Here](#)
+🔗 **Demo:** [Demo Soon](#)
 
 ---
 
