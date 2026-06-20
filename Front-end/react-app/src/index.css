@@ -279,3 +279,43 @@ input:focus {
     pointer-events: none;
     visibility: hidden;
 }
+
+.box.outside-year {
+    background: transparent;
+    border: none;
+}
+
+.box.future {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.box {
+    cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    min-width: 280px;
+}
+
+.modal textarea {
+    width: 100%;
+    min-height: 60px;
+    margin: 8px 0;
+}

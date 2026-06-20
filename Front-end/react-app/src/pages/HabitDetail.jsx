@@ -15,8 +15,8 @@ const HabitDetail = () => {
             .catch(err => console.log(err.message))
     }, [id])
 
-    const markDone = () => {
-        api.patch(`/api/habits/${id}/complete`)
+    const markDone = (note) => {
+        api.patch(`/api/habits/${id}/complete`, { note })
             .then(res => setHabit(res.data))
             .catch(err => {
                 if (err.response?.status === 400) alert("Already done today!")
@@ -44,11 +44,11 @@ const HabitDetail = () => {
 
             <div className="grid-section">
                 <h3>Contribution History</h3>
-                <ContributionGrid completedDates={habit.completedDates} />
+                <ContributionGrid entries={habit.entries} onComplete={markDone} />
             </div>
 
             <div className="detail-actions">
-                <button onClick={markDone} className="DoneButton">Mark as Done</button>
+                <button onClick={() => markDone('')} className="DoneButton">Mark as Done</button>
                 <button onClick={deleteHabit} className="DeleteButton">Delete Habit</button>
             </div>
             <Footer />

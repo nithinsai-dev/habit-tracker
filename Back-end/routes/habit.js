@@ -48,7 +48,8 @@ router.post("/", async (req, res) => {
 //DELETE a habit
 router.delete("/:id", async (req, res) => {
     try {
-        await Habit.findByIdAndDelete(req.params.id);
+        const deleted = await Habit.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+        if (!deleted) return res.status(404).json({ message: "Habit Not Found" });
         res.json({ message: "Habit deleted Successfully" });
     } catch (err) {
         console.log(err.message);
@@ -58,13 +59,14 @@ router.delete("/:id", async (req, res) => {
 
 router.patch("/:id/complete", async (req, res) => {
     try {
-        const habit = await Habit.findById(req.params.id);
+        const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
+        if (!habit) return res.status(404).json({ message: "Habit Not Found" });
         const today = new Date();
         const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         // Check already done today
-        const alreadyDoneToday = habit.completedDates.some(date => {
-            const d = new Date(date);
+        const alreadyDoneToday = habit.entries.some(entry => {
+            const d = new Date(entry.date);
             return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() === todayMidnight.getTime();
         });
 
@@ -73,13 +75,13 @@ router.patch("/:id/complete", async (req, res) => {
         }
 
         // Add today
-        habit.completedDates.push(today);
+        habit.entries.push({ date: today, note: req.body?.note || '' });
         habit.lastCompletedDate = today;
         habit.completed = true;
 
         const uniqueDays = [...new Set(
-            habit.completedDates.map(date => {
-                const d = new Date(date);
+            habit.entries.map(entry => {
+                const d = new Date(entry.date);
                 return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
             })
         )].sort((a, b) => b - a); // newest first
