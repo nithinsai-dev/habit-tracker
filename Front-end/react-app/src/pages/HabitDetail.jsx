@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
 import ContributionGrid from "../components/ContributionGrid.jsx";
 import Footer from "../components/Footer.jsx";
+import useTheme from '../hooks/useTheme.js';
 
 const HabitDetail = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [habit, setHabit] = useState(null)
+    useTheme(); // ensures data-theme is applied even if this page is opened directly via URL
 
     useEffect(() => {
         api.get(`/api/habits/${id}`)
@@ -29,7 +31,7 @@ const HabitDetail = () => {
             .catch(err => console.log(err.message))
     }
 
-    if (!habit) return <p>Loading...</p>
+    if (!habit) return <p className="empty-state">Loading…</p>
 
     return (
         <div className="detail-container">

@@ -1,14 +1,61 @@
 @import "tailwindcss";
 
+:root {
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --surface-2: #f4f5f8;
+    --text: #1a1a1a;
+    --text-muted: #718096;
+    --border: #ddd;
+    --accent: #6366f1;
+    --accent-hover: hsl(239, 84%, 47%);
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --success: #10b981;
+    --success-hover: #059669;
+    --success-glow: rgba(16, 185, 129, 0.3);
+    --danger: #ff4d4d;
+    --danger-hover: #cc0000;
+    --danger-glow: rgba(255, 77, 77, 0.3);
+    --warning-bg: #fff7ed;
+    --warning-text: #ea580c;
+    --warning-border: #fed7aa;
+    --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --cell-empty: #ebedf0;
+}
+
+:root[data-theme="dark"] {
+    --bg: #16161c;
+    --surface: #1d1d25;
+    --surface-2: #24242e;
+    --text: #f1f1f4;
+    --text-muted: #9a9aa8;
+    --border: #2c2c38;
+    --accent: #8b7cff;
+    --accent-hover: #9d90ff;
+    --accent-glow: rgba(139, 124, 255, 0.45);
+    --success: #34d399;
+    --success-hover: #10b981;
+    --success-glow: rgba(52, 211, 153, 0.35);
+    --danger: #ef6b68;
+    --danger-hover: #e0524f;
+    --danger-glow: rgba(239, 107, 104, 0.35);
+    --warning-bg: rgba(251, 146, 60, 0.15);
+    --warning-text: #fb923c;
+    --warning-border: rgba(251, 146, 60, 0.35);
+    --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.4);
+    --cell-empty: #34343f;
+}
+
 body {
-    background-color: #f0f2f5;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Inter', -apple-system, sans-serif;
     display: flex;
     justify-content: center;
     padding: 20px;
     min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
-
 
 #root>div {
     width: 100%;
@@ -16,59 +63,74 @@ body {
 }
 
 h1 {
-    color: #1a1a1a;
+    color: var(--text);
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 30px;
 }
 
-input {
+input,
+.search-input {
     padding: 12px 15px;
-    border: 2px solid #ddd;
+    border: 2px solid var(--border);
     border-radius: 8px;
     width: 500px;
+    max-width: 100%;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    background-color: var(--surface);
+    color: var(--text);
+    transition: border-color 0.3s, box-shadow 0.3s;
     margin-bottom: 15px;
 }
 
-input:focus {
+input::placeholder {
+    color: var(--text-muted);
+}
+
+input:focus,
+.search-input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
 .Habit {
-    background-color: white;
+    background-color: var(--surface);
     padding: 20px;
-    margin: 20px 0;
     border-radius: 15px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border-left: 8px solid #6366f1;
-    transition: transform 0.2s;
+    box-shadow: var(--shadow-card);
+    border-left: 8px solid var(--accent);
+    width: 300px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
 .Habit:hover {
     transform: translateY(-3px);
+    box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-glow);
 }
 
 .Habit h1 {
     font-size: 1.5rem;
     margin: 0;
-    color: #2d3748 !important;
+    color: var(--text);
     text-align: left;
 }
 
 .Habit p {
-    color: #718096;
+    color: var(--text-muted);
     margin: 8px 0;
 }
-
 
 .DoneButton {
     display: block;
     width: 100%;
     margin-top: 15px;
-    background-color: #10b981;
+    background-color: var(--success);
     color: white;
     padding: 10px;
     border: none;
@@ -79,10 +141,9 @@ input:focus {
 }
 
 .DoneButton:hover {
-    background-color: #059669;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background-color: var(--success-hover);
+    box-shadow: 0 4px 16px var(--success-glow);
 }
-
 
 .habit-grid {
     display: flex;
@@ -94,34 +155,16 @@ input:focus {
     width: 100%;
 }
 
-
-.Habit {
-    background-color: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    flex-grow: 0;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .input-section {
     text-align: center;
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px
 }
 
-
 .DeleteButton {
-    top: 10px;
-    right: 10px;
-    background: #ff4d4d;
+    background: var(--danger);
     color: white;
     border: none;
     font-weight: 600;
@@ -129,18 +172,36 @@ input:focus {
     border-radius: 6px;
     padding: 10px;
     transition: all 0.2s ease;
-    opacity: 0.8;
+    opacity: 0.9;
     margin-top: 15px;
 }
 
 .DeleteButton:hover {
-    background: #cc0000;
+    background: var(--danger-hover);
     opacity: 1;
     transform: scale(1.05);
+    box-shadow: 0 4px 16px var(--danger-glow);
+}
+
+/* Logout is not a destructive action — its own neutral class, not DeleteButton */
+.LogoutButton {
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+}
+
+.LogoutButton:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .addButton {
-    background-color: #6366f1;
+    background-color: var(--accent);
     color: white;
     padding: 10px;
     font-weight: 600;
@@ -148,10 +209,38 @@ input:focus {
     border-radius: 6px;
     cursor: pointer;
     width: 300px;
+    transition: all 0.2s ease;
 }
 
 .addButton:hover {
-    background-color: hsl(239, 84%, 47%);
+    background-color: var(--accent-hover);
+    box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .auth-container {
@@ -162,16 +251,49 @@ input:focus {
     margin-bottom: 30px;
 }
 
-
 .box {
     width: 12px;
     height: 12px;
     border-radius: 2px;
-    background-color: #ebedf0;
+    background-color: var(--cell-empty);
+    cursor: pointer;
 }
 
 .box.completed {
-    background-color: #16a34a;
+    background-color: var(--success);
+}
+
+.box.empty {
+    background: transparent;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.box.outside-year {
+    background: transparent;
+    border: none;
+}
+
+.box.future {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.mini-streak-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 12px;
+}
+
+.mini-cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--cell-empty);
+}
+
+.mini-cell.filled {
+    background: var(--accent);
 }
 
 .detail-container {
@@ -183,7 +305,7 @@ input:focus {
 .back-btn {
     background: none;
     border: none;
-    color: #6366f1;
+    color: var(--accent);
     font-size: 1rem;
     cursor: pointer;
     font-weight: 600;
@@ -192,54 +314,54 @@ input:focus {
 }
 
 .back-btn:hover {
-    color: hsl(239, 84%, 47%)
+    color: var(--accent-hover);
 }
 
 .detail-header {
-    background: white;
+    background: var(--surface);
     border-radius: 15px;
     padding: 30px;
-    border-left: 8px solid #6366f1;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-left: 8px solid var(--accent);
+    box-shadow: var(--shadow-card);
     margin-bottom: 25px;
 }
 
 .detail-header h1 {
     font-size: 2rem;
-    color: #2d3748;
+    color: var(--text);
     margin: 0 0 8px 0;
     text-align: left;
 }
 
 .detail-description {
-    color: #718096;
+    color: var(--text-muted);
     font-size: 1rem;
     margin: 0 0 15px 0;
 }
 
 .streak-display {
     display: inline-block;
-    background: #fff7ed;
-    color: #ea580c;
+    background: var(--warning-bg);
+    color: var(--warning-text);
     padding: 8px 16px;
     border-radius: 20px;
     font-weight: 700;
     font-size: 1.1rem;
-    border: 2px solid #fed7aa;
+    border: 2px solid var(--warning-border);
 }
 
 .grid-section {
-    background: white;
+    background: var(--surface);
     border-radius: 15px;
     padding: 25px 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-card);
     margin-bottom: 25px;
     overflow: visible !important;
     height: auto !important;
 }
 
 .grid-section h3 {
-    color: #2d3748;
+    color: var(--text);
     margin: 0 0 15px 0;
     font-size: 1rem;
     text-transform: uppercase;
@@ -262,8 +384,19 @@ input:focus {
 
 .footer-text {
     font-size: 15px;
-    color: grey;
+    color: var(--text-muted);
     text-align: center;
+}
+
+.footer-spacer {
+    margin-top: 4rem;
+}
+
+.empty-state {
+    width: 100%;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
 }
 
 .grid {
@@ -274,33 +407,13 @@ input:focus {
     width: max-content;
 }
 
-.box.empty {
-    background: transparent;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-.box.outside-year {
-    background: transparent;
-    border: none;
-}
-
-.box.future {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.box {
-    cursor: pointer;
-}
-
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -308,7 +421,8 @@ input:focus {
 }
 
 .modal {
-    background: white;
+    background: var(--surface);
+    color: var(--text);
     padding: 24px;
     border-radius: 12px;
     min-width: 280px;
@@ -318,4 +432,8 @@ input:focus {
     width: 100%;
     min-height: 60px;
     margin: 8px 0;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: 8px;
 }
