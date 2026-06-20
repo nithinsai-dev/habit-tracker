@@ -34,6 +34,7 @@ router.post("/", async (req, res) => {
     const habit = new Habit({
         name: req.body.name,
         description: req.body.description,
+        category: req.body.category,
         userId: req.userId
     });
     try {

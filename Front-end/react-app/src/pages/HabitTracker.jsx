@@ -9,6 +9,7 @@ function HabitTracker() {
     const [habits, setHabits] = useState([])
     const [name, setName] = useState('')
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('General');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
@@ -23,11 +24,12 @@ function HabitTracker() {
     const addHabit = () => {
         if (!name.trim()) return;
 
-        api.post('/api/habits', { name, description })
+        api.post('/api/habits', { name, description, category })
             .then(res => {
                 setHabits(prevHabits => [...prevHabits, res.data]);
                 setName('');
                 setDescription('');
+                setCategory('General');
             })
             .catch(err => console.error("Failed to add habit", err));
     }
@@ -75,6 +77,14 @@ function HabitTracker() {
                     onChange={e => setDescription(e.target.value)}
                     placeholder="Enter description (optional)"
                 />
+                <select value={category} onChange={e => setCategory(e.target.value)}>
+                    <option value="Career">Career</option>
+                    <option value="Health">Health</option>
+                    <option value="Fitness">Fitness</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Learning">Learning</option>
+                    <option value="General">General</option>
+                </select>
                 <br />
                 <button onClick={addHabit} className='addButton'>Add</button>
             </div>
@@ -103,7 +113,8 @@ function HabitTracker() {
                                 streak={habit.streak}
                                 completed={habit.completed}
                                 description={habit.description}
-                                completedDates={habit.completedDates}
+                                category={habit.category}
+                                entries={habit.entries}
                             />
                         ))}
                     </div>

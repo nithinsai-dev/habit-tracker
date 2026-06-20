@@ -53,7 +53,9 @@ const HabitDetail = () => {
                 <button onClick={() => markDone('')} className="DoneButton">Mark as Done</button>
                 <button onClick={deleteHabit} className="DeleteButton">Delete Habit</button>
             </div>
-            <Footer />
+            <div className="footer-spacer">
+                <Footer />
+            </div>
         </div>
     )
 }
