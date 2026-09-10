@@ -1,114 +1,292 @@
-import React, { useState } from "react";
+import { useState, useMemo } from "react";
 
-const ContributionGrid = (props) => {
-    const entries = props.entries || [];
-    const onComplete = props.onComplete; // function(note) passed from HabitDetail
-    const today = new Date();
-    const year = today.getFullYear();
-
-    const yearStart = new Date(year, 0, 1);
-    const yearEnd = new Date(year, 11, 31);
-
-    const startDate = new Date(yearStart);
-    startDate.setDate(yearStart.getDate() - yearStart.getDay());
-
-    const endDate = new Date(yearEnd);
-    endDate.setDate(yearEnd.getDate() + (6 - yearEnd.getDay()));
-
-    // Each day is now an object, not a raw Date — carries whether it's
-    // actually in the selected year (vs padding) and whether it's future.
-    const days = [];
-    const current = new Date(startDate);
-    while (current <= endDate) {
-        const d = new Date(current);
-        days.push({
-            date: d,
-            inYear: d.getFullYear() === year,
-            isFuture: d > today,
-        });
-        current.setDate(current.getDate() + 1);
-    }
-
-    // Month label row: walk the days in chunks of 7 (one chunk = one column),
-    // and record where each month's 1st actually falls.
-    const totalWeeks = Math.ceil(days.length / 7);
-    const monthLabels = [];
-    for (let w = 0; w < totalWeeks; w++) {
-        const week = days.slice(w * 7, w * 7 + 7);
-        const firstOfMonth = week.find(d => d.inYear && d.date.getDate() === 1);
-        if (firstOfMonth) {
-            monthLabels.push({ week: w, name: firstOfMonth.date.toLocaleString('default', { month: 'short' }) });
-        }
-    }
-
-    const getEntry = (day) =>
-        entries.find(e => e?.date && new Date(e.date).toDateString() === day.date.toDateString());
-
-    const isToday = (day) => day.date.toDateString() === today.toDateString();
-
+const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
     const [selectedDay, setSelectedDay] = useState(null);
     const [noteInput, setNoteInput] = useState("");
+    const [tooltip, setTooltip] = useState(null);
 
-    const handleDayClick = (day) => {
-        if (!day.inYear || day.isFuture) return; // locked, do nothing
+    const today = useMemo(() => new Date(), []);
+    const year = today.getFullYear();
+
+    // Map of 'YYYY-MM-DD' => entry
+    const entryMap = useMemo(() => {
+        const map = new Map();
+        entries.forEach(e => {
+            if (!e) return;
+            let dStr = e.dateStr;
+            if (!dStr && e.date) {
+                const d = new Date(e.date);
+                if (!isNaN(d.getTime())) {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const dayNum = String(d.getDate()).padStart(2, '0');
+                    dStr = `${y}-${m}-${dayNum}`;
+                }
+            }
+            if (dStr) {
+                map.set(dStr, e);
+            }
+        });
+        return map;
+    }, [entries]);
+
+    // Build the 52+ week calendar grid
+    const { days, totalWeeks, monthLabels } = useMemo(() => {
+        const yearStart = new Date(year, 0, 1);
+        const yearEnd = new Date(year, 11, 31);
+
+        // Align to start of week (Sunday = 0)
+        const startDate = new Date(yearStart);
+        startDate.setDate(yearStart.getDate() - yearStart.getDay());
+
+        // Align to end of week (Saturday = 6)
+        const endDate = new Date(yearEnd);
+        endDate.setDate(yearEnd.getDate() + (6 - yearEnd.getDay()));
+
+        const dayList = [];
+        const current = new Date(startDate);
+
+        const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        while (current <= endDate) {
+            const d = new Date(current);
+            const curMid = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const dayNum = String(d.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${dayNum}`;
+
+            dayList.push({
+                date: d,
+                dateStr,
+                inYear: d.getFullYear() === year,
+                isToday: curMid.getTime() === todayMid.getTime(),
+                isFuture: curMid.getTime() > todayMid.getTime()
+            });
+
+            current.setDate(current.getDate() + 1);
+        }
+
+        const weeksCount = Math.ceil(dayList.length / 7);
+        const months = [];
+
+        for (let w = 0; w < weeksCount; w++) {
+            const week = dayList.slice(w * 7, w * 7 + 7);
+            const firstOfMonth = week.find(d => d.inYear && d.date.getDate() <= 7 && d.date.getDate() === 1);
+            if (firstOfMonth) {
+                months.push({
+                    week: w,
+                    name: firstOfMonth.date.toLocaleString('default', { month: 'short' })
+                });
+            }
+        }
+
+        return { days: dayList, totalWeeks: weeksCount, monthLabels: months };
+    }, [year, today]);
+
+    const handleCellClick = (day) => {
+        if (!day.inYear || day.isFuture) return;
+        const entry = entryMap.get(day.dateStr);
         setSelectedDay(day);
-        setNoteInput("");
+        setNoteInput(entry?.note || "");
     };
 
-    const handleSubmitNote = () => {
-        onComplete(noteInput);
+    const handleSaveNote = () => {
+        if (onComplete && selectedDay) {
+            onComplete(noteInput, selectedDay.date);
+        }
         setSelectedDay(null);
     };
 
+    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
     return (
-        <>
-            <div className="month-labels" style={{ display: "grid", gridTemplateColumns: `repeat(${totalWeeks}, 12px)`, gap: "4px", marginBottom: "4px" }}>
-                {monthLabels.map(m => (
-                    <span key={m.week} style={{ gridColumnStart: m.week + 1, fontSize: "12px" }}>{m.name}</span>
-                ))}
+        <div className="contribution-grid-container">
+            <div className="grid-scroll-wrapper">
+                {/* Month labels header */}
+                <div
+                    className="grid-months-row"
+                    style={{ gridTemplateColumns: `repeat(${totalWeeks}, 14px)` }}
+                >
+                    {monthLabels.map(m => (
+                        <span
+                            key={m.week}
+                            className="grid-month-label"
+                            style={{ gridColumnStart: m.week + 1 }}
+                        >
+                            {m.name}
+                        </span>
+                    ))}
+                </div>
+
+                <div className="grid-body-wrapper">
+                    {/* Weekday indicators */}
+                    <div className="grid-day-labels">
+                        {dayLabels.map((lbl, idx) => (
+                            <span key={idx} className="grid-day-label">
+                                {idx % 2 === 1 ? lbl : ''}
+                            </span>
+                        ))}
+                    </div>
+
+                    {/* Heatmap grid */}
+                    <div
+                        className="grid-cells"
+                        style={{ gridTemplateColumns: `repeat(${totalWeeks}, 14px)` }}
+                    >
+                        {days.map((day, i) => {
+                            const entry = entryMap.get(day.dateStr);
+                            const isDone = !!entry;
+
+                            let cellClass = "grid-cell";
+                            if (!day.inYear) cellClass += " outside-year";
+                            else if (day.isFuture) cellClass += " future";
+                            else if (isDone) cellClass += " completed";
+                            if (day.isToday) cellClass += " today";
+
+                            return (
+                                <div
+                                    key={i}
+                                    className={cellClass}
+                                    style={isDone ? { backgroundColor: color, borderColor: color } : {}}
+                                    onMouseEnter={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setTooltip({
+                                            text: `${day.date.toLocaleDateString(undefined, {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                            })}: ${isDone ? (entry?.note ? `Completed ("${entry.note}")` : 'Completed') : (day.isFuture ? 'Future' : 'Not completed')}`,
+                                            x: rect.left + window.scrollX,
+                                            y: rect.top + window.scrollY - 30
+                                        });
+                                    }}
+                                    onMouseLeave={() => setTooltip(null)}
+                                    onClick={() => handleCellClick(day)}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
 
-            <div className="grid">
-                {days.map((day, i) => {
-                    let className = "box";
-                    if (!day.inYear) className = "box outside-year";
-                    else if (day.isFuture) className = "box future";
-                    else if (getEntry(day)) className = "box completed";
+            {/* Tooltip */}
+            {tooltip && (
+                <div
+                    className="grid-floating-tooltip"
+                    style={{ left: tooltip.x, top: tooltip.y }}
+                >
+                    {tooltip.text}
+                </div>
+            )}
 
-                    return (
-                        <div
-                            key={i}
-                            className={className}
-                            title={day.date.toDateString()}
-                            onClick={() => handleDayClick(day)}
-                        />
-                    );
-                })}
+            {/* Legend */}
+            <div className="grid-legend">
+                <span className="legend-label">Less</span>
+                <div className="legend-cell empty" />
+                <div className="legend-cell filled" style={{ backgroundColor: color }} />
+                <span className="legend-label">More</span>
             </div>
 
+            {/* Day Inspection / Note Modal */}
             {selectedDay && (
                 <div className="modal-overlay" onClick={() => setSelectedDay(null)}>
-                    <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <h4>{selectedDay.date.toDateString()}</h4>
-                        {getEntry(selectedDay) ? (
-                            <p>{getEntry(selectedDay).note || "No note added."}</p>
-                        ) : isToday(selectedDay) ? (
-                            <>
-                                <textarea
-                                    value={noteInput}
-                                    onChange={(e) => setNoteInput(e.target.value)}
-                                    placeholder="Add a note (optional)"
-                                />
-                                <button onClick={handleSubmitNote} className="DoneButton">Mark Complete</button>
-                            </>
-                        ) : (
-                            <p>Not completed.</p>
-                        )}
-                        <button onClick={() => setSelectedDay(null)} className="DeleteButton" >Close</button>
+                    <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>{selectedDay.date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h3>
+                            <button className="modal-close-btn" onClick={() => setSelectedDay(null)}>✕</button>
+                        </div>
+
+                        <div className="modal-body">
+                            {entryMap.has(selectedDay.dateStr) ? (
+                                <div className="entry-details">
+                                    <div className="status-badge success">
+                                        <span className="badge-check">✓</span>
+                                        <span>Completed on this day</span>
+                                    </div>
+                                    <div className="note-display">
+                                        <span className="note-label">Attached Reflection / Note:</span>
+                                        <div className="note-content">
+                                            {entryMap.get(selectedDay.dateStr)?.note ? (
+                                                <p className="note-quote">“{entryMap.get(selectedDay.dateStr).note}”</p>
+                                            ) : (
+                                                <p className="note-placeholder">No reflection note attached for this check-in.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button
+                                            type="button"
+                                            className="btn-secondary"
+                                            onClick={() => setSelectedDay(null)}
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : selectedDay.isToday ? (
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleSaveNote();
+                                    }}
+                                    className="entry-create-form"
+                                >
+                                    <div className="day-modal-prompt">
+                                        <span className="prompt-icon">💡</span>
+                                        <p>You haven't completed this habit for today yet. Check it off below with an optional reflection.</p>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="modal-note-input">Reflection or Note (Optional)</label>
+                                        <textarea
+                                            id="modal-note-input"
+                                            value={noteInput}
+                                            onChange={(e) => setNoteInput(e.target.value)}
+                                            placeholder="e.g. Completed 20-min session, felt great focus today..."
+                                            rows={3}
+                                            autoFocus
+                                        />
+                                    </div>
+
+                                    <div className="modal-footer">
+                                        <button
+                                            type="button"
+                                            className="btn-secondary"
+                                            onClick={() => setSelectedDay(null)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="btn-primary"
+                                            style={{ backgroundColor: color }}
+                                        >
+                                            ✓ Mark Done with Note
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div className="entry-empty">
+                                    <div className="empty-calendar-icon">📅</div>
+                                    <p className="empty-calendar-text">No check-in was recorded for this past day.</p>
+                                    <div className="modal-footer">
+                                        <button
+                                            type="button"
+                                            className="btn-secondary"
+                                            onClick={() => setSelectedDay(null)}
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

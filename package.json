@@ -1,4 +1,13 @@
 {
+  "name": "habit-tracker-root",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix Front-end/react-app",
+    "dev:backend": "npm run dev --prefix Back-end",
+    "build:frontend": "npm run build --prefix Front-end/react-app",
+    "start:backend": "npm start --prefix Back-end"
+  },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "tailwindcss": "^4.3.0"

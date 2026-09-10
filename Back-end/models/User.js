@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    streakFreezesAvailable: {
+        type: Number,
+        default: 2
+    },
+    lastFreezeResetDate: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true });
 
