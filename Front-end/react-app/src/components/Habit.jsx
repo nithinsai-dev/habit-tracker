@@ -15,14 +15,24 @@ function MiniStreakGrid({ last7Days = [], color }) {
         <div className="mini-streak-container">
             <span className="mini-streak-label">Last 7 days</span>
             <div className="mini-streak-grid">
-                {last7Days.map((day, idx) => (
-                    <div
-                        key={idx}
-                        title={`${day.dateStr}: ${day.completed ? 'Completed' : 'Missed'}`}
-                        className={`mini-cell ${day.completed ? 'filled' : ''}`}
-                        style={day.completed ? { backgroundColor: color || 'var(--accent)' } : {}}
-                    />
-                ))}
+                {last7Days.map((day, idx) => {
+                    const isRestDay = day.isScheduled === false;
+                    let title = `${day.dateStr}: ${day.completed ? 'Completed' : (isRestDay ? 'Rest Day' : 'Missed')}`;
+                    if (day.isFreeze) title += ' (Freeze)';
+
+                    let cellClass = 'mini-cell';
+                    if (day.completed) cellClass += ' filled';
+                    else if (isRestDay) cellClass += ' rest-day';
+
+                    return (
+                        <div
+                            key={idx}
+                            title={title}
+                            className={cellClass}
+                            style={day.completed ? { backgroundColor: color || 'var(--accent)' } : {}}
+                        />
+                    );
+                })}
             </div>
         </div>
     );

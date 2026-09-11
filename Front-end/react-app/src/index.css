@@ -617,6 +617,12 @@ body {
     background: var(--accent);
 }
 
+.mini-cell.rest-day {
+    opacity: 0.4;
+    background: transparent;
+    border: 1px dashed var(--text-muted);
+}
+
 /* Detail Page */
 .detail-nav {
     display: flex;
@@ -834,6 +840,10 @@ body {
 .grid-cell.future {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+.grid-cell.rest-day {
+    opacity: 0.3;
 }
 
 .grid-cell.today {

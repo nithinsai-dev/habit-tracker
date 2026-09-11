@@ -27,6 +27,50 @@ const getPrevDateStr = (dateStr) => {
     return toDateStr(date);
 };
 
+// Helper to determine if a date is a scheduled day for a given habit frequency
+const isScheduledDay = (dateInput, frequency = 'daily') => {
+    if (!frequency || frequency === 'daily') return true;
+    let d;
+    if (typeof dateInput === 'string') {
+        const [y, m, day] = dateInput.split('-').map(Number);
+        d = new Date(y, m - 1, day);
+    } else {
+        d = new Date(dateInput);
+    }
+    const dayOfWeek = d.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    if (frequency === 'weekdays') {
+        return dayOfWeek >= 1 && dayOfWeek <= 5;
+    }
+    if (frequency === 'weekends') {
+        return dayOfWeek === 0 || dayOfWeek === 6;
+    }
+    return true;
+};
+
+// Helper to step backward to the previous scheduled date according to habit frequency
+const getPrevScheduledDateStr = (dateStr, frequency = 'daily') => {
+    let cursor = getPrevDateStr(dateStr);
+    if (!frequency || frequency === 'daily') return cursor;
+    let safety = 0;
+    while (!isScheduledDay(cursor, frequency) && safety < 14) {
+        cursor = getPrevDateStr(cursor);
+        safety++;
+    }
+    return cursor;
+};
+
+// Helper to get the most recent scheduled date on or before dateStr
+const getLastScheduledDateOnOrBefore = (dateStr, frequency = 'daily') => {
+    let cursor = dateStr;
+    if (!frequency || frequency === 'daily') return cursor;
+    let safety = 0;
+    while (!isScheduledDay(cursor, frequency) && safety < 14) {
+        cursor = getPrevDateStr(cursor);
+        safety++;
+    }
+    return cursor;
+};
+
 // Helper to check and reset monthly streak freezes
 const getAndResetUserFreezes = async (userId) => {
     const user = await User.findById(userId);
@@ -47,7 +91,11 @@ const getAndResetUserFreezes = async (userId) => {
 // Calculate streak, bestStreak, habit strength, and completion info
 const computeHabitStats = (habit, referenceDate = new Date()) => {
     const todayStr = toDateStr(referenceDate);
-    const yesterdayStr = getPrevDateStr(todayStr);
+    const frequency = habit.frequency || 'daily';
+
+    const isTodayScheduled = isScheduledDay(todayStr, frequency);
+    const prevScheduledStr = getPrevScheduledDateStr(todayStr, frequency);
+    const lastScheduledOnOrBeforeTodayStr = getLastScheduledDateOnOrBefore(todayStr, frequency);
 
     const rawEntries = habit.entries || [];
     const dateSet = new Set();
@@ -76,9 +124,18 @@ const computeHabitStats = (habit, referenceDate = new Date()) => {
     let checkDateStr = null;
 
     if (isCompletedToday) {
+        // Completed today (scheduled or bonus day)
         checkDateStr = todayStr;
-    } else if (dateSet.has(yesterdayStr)) {
-        checkDateStr = yesterdayStr; // Still alive today until midnight
+    } else if (isTodayScheduled) {
+        // Today is a scheduled day, not yet completed: grace period applies if previous scheduled day was completed
+        if (dateSet.has(prevScheduledStr)) {
+            checkDateStr = prevScheduledStr;
+        }
+    } else {
+        // Today is an off/rest day: streak stays alive if the last scheduled day was completed
+        if (dateSet.has(lastScheduledOnOrBeforeTodayStr)) {
+            checkDateStr = lastScheduledOnOrBeforeTodayStr;
+        }
     }
 
     if (checkDateStr) {
@@ -86,7 +143,7 @@ const computeHabitStats = (habit, referenceDate = new Date()) => {
         let cursor = checkDateStr;
         while (dateSet.has(cursor)) {
             currentStreak++;
-            cursor = getPrevDateStr(cursor);
+            cursor = getPrevScheduledDateStr(cursor, frequency);
         }
     }
 
@@ -100,7 +157,9 @@ const computeHabitStats = (habit, referenceDate = new Date()) => {
         if (!prevDate) {
             runningStreak = 1;
         } else {
-            if (getPrevDateStr(dStr) === prevDate) {
+            // Consecutive if no scheduled day was skipped between prevDate and dStr
+            const expectedPrev = getPrevScheduledDateStr(dStr, frequency);
+            if (prevDate >= expectedPrev) {
                 runningStreak++;
             } else {
                 runningStreak = 1;
@@ -124,33 +183,44 @@ const computeHabitStats = (habit, referenceDate = new Date()) => {
         last7Days.push({
             dateStr: ds,
             completed: dateSet.has(ds),
-            isFreeze: entryMap.get(ds)?.isFreeze || false
+            isFreeze: entryMap.get(ds)?.isFreeze || false,
+            isScheduled: isScheduledDay(ds, frequency)
         });
     }
 
-    // 30 days completion rate
+    // 30 days completion rate (fair denominator based on scheduled days)
+    let scheduledIn30Days = 0;
     let completedIn30Days = 0;
     for (let i = 0; i < 30; i++) {
         const d = new Date(dayCursor);
         d.setDate(dayCursor.getDate() - i);
-        if (dateSet.has(toDateStr(d))) {
+        const ds = toDateStr(d);
+        if (isScheduledDay(ds, frequency)) {
+            scheduledIn30Days++;
+        }
+        if (dateSet.has(ds)) {
             completedIn30Days++;
         }
     }
-    const completionRate30 = Math.round((completedIn30Days / 30) * 100);
+    const denominator30 = scheduledIn30Days > 0 ? scheduledIn30Days : 30;
+    const completionRate30 = Math.min(100, Math.round((completedIn30Days / denominator30) * 100));
 
     // 60 days Habit Strength / Consistency Score with Recency Weighting
     let earnedStrengthPoints = 0;
-    const maxStrengthPoints = 74; // 14 days * 2 + 46 days * 1
+    let maxStrengthPoints = 0;
     for (let i = 0; i < 60; i++) {
         const d = new Date(dayCursor);
         d.setDate(dayCursor.getDate() - i);
         const ds = toDateStr(d);
+        const weight = i < 14 ? 2 : 1; // More recent days carry higher weight
+        if (isScheduledDay(ds, frequency)) {
+            maxStrengthPoints += weight;
+        }
         if (dateSet.has(ds)) {
-            const weight = i < 14 ? 2 : 1; // More recent days carry higher weight
             earnedStrengthPoints += weight;
         }
     }
+    if (maxStrengthPoints === 0) maxStrengthPoints = 74;
     const habitStrength = Math.min(100, Math.round((earnedStrengthPoints / maxStrengthPoints) * 100));
 
     let strengthLevel = 'Forming 🌱';
@@ -158,9 +228,10 @@ const computeHabitStats = (habit, referenceDate = new Date()) => {
     else if (habitStrength >= 50) strengthLevel = 'Strong 🌳';
     else if (habitStrength >= 25) strengthLevel = 'Developing 🌿';
 
-    // Check if yesterday can be frozen (yesterday missed, but day before yesterday was done)
-    const dayBeforeYesterdayStr = getPrevDateStr(yesterdayStr);
-    const canFreezeYesterday = !dateSet.has(yesterdayStr) && dateSet.has(dayBeforeYesterdayStr);
+    // Check if the previous scheduled day can be frozen
+    const lastScheduledDayToFreeze = isTodayScheduled ? prevScheduledStr : lastScheduledOnOrBeforeTodayStr;
+    const dayBeforeThatScheduled = getPrevScheduledDateStr(lastScheduledDayToFreeze, frequency);
+    const canFreezeYesterday = !dateSet.has(lastScheduledDayToFreeze) && dateSet.has(dayBeforeThatScheduled);
 
     return {
         isCompletedToday,
@@ -574,20 +645,24 @@ router.post("/:id/freeze", async (req, res) => {
 
         const today = new Date();
         const todayStr = toDateStr(today);
-        const yesterdayStr = getPrevDateStr(todayStr);
+        const frequency = habit.frequency || 'daily';
+        const isTodayScheduled = isScheduledDay(todayStr, frequency);
+        const targetFreezeDateStr = isTodayScheduled
+            ? getPrevScheduledDateStr(todayStr, frequency)
+            : getLastScheduledDateOnOrBefore(todayStr, frequency);
 
-        const existingYesterday = habit.entries.some(e => (e.dateStr || toDateStr(e.date)) === yesterdayStr);
-        if (existingYesterday) {
-            return res.status(400).json({ message: "Yesterday is already logged" });
+        const existingTarget = habit.entries.some(e => (e.dateStr || toDateStr(e.date)) === targetFreezeDateStr);
+        if (existingTarget) {
+            return res.status(400).json({ message: "Previous scheduled day is already logged" });
         }
 
-        // Add freeze entry for yesterday
-        const [y, m, d] = yesterdayStr.split('-').map(Number);
-        const yesterdayDate = new Date(y, m - 1, d);
+        // Add freeze entry for target scheduled day
+        const [y, m, d] = targetFreezeDateStr.split('-').map(Number);
+        const freezeDate = new Date(y, m - 1, d);
 
         habit.entries.push({
-            date: yesterdayDate,
-            dateStr: yesterdayStr,
+            date: freezeDate,
+            dateStr: targetFreezeDateStr,
             note: 'Streak Protected ❄️',
             isFreeze: true,
             value: habit.targetValue || 1
@@ -659,4 +734,5 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+export { computeHabitStats, isScheduledDay, getPrevScheduledDateStr, getLastScheduledDateOnOrBefore };
 export default router;

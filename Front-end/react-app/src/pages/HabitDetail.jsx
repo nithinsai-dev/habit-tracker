@@ -348,6 +348,7 @@ const HabitDetail = () => {
                         color={accentColor}
                         isCompletedToday={habit.isCompletedToday}
                         onComplete={handleToggleToday}
+                        frequency={habit.frequency || 'daily'}
                     />
                 </div>
             </section>

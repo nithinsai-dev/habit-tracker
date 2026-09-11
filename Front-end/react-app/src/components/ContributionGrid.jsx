@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
+const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete, frequency = 'daily' }) => {
     const [selectedDay, setSelectedDay] = useState(null);
     const [noteInput, setNoteInput] = useState("");
     const [tooltip, setTooltip] = useState(null);
@@ -56,13 +56,19 @@ const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
             const m = String(d.getMonth() + 1).padStart(2, '0');
             const dayNum = String(d.getDate()).padStart(2, '0');
             const dateStr = `${y}-${m}-${dayNum}`;
+            const dayOfWeek = d.getDay();
+
+            const isScheduled = !frequency || frequency === 'daily' ||
+                (frequency === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) ||
+                (frequency === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6));
 
             dayList.push({
                 date: d,
                 dateStr,
                 inYear: d.getFullYear() === year,
                 isToday: curMid.getTime() === todayMid.getTime(),
-                isFuture: curMid.getTime() > todayMid.getTime()
+                isFuture: curMid.getTime() > todayMid.getTime(),
+                isScheduled
             });
 
             current.setDate(current.getDate() + 1);
@@ -83,7 +89,7 @@ const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
         }
 
         return { days: dayList, totalWeeks: weeksCount, monthLabels: months };
-    }, [year, today]);
+    }, [year, today, frequency]);
 
     const handleCellClick = (day) => {
         if (!day.inYear || day.isFuture) return;
@@ -143,7 +149,17 @@ const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
                             if (!day.inYear) cellClass += " outside-year";
                             else if (day.isFuture) cellClass += " future";
                             else if (isDone) cellClass += " completed";
+                            else if (!day.isScheduled) cellClass += " rest-day";
                             if (day.isToday) cellClass += " today";
+
+                            let statusText = 'Not completed';
+                            if (isDone) {
+                                statusText = entry?.note ? `Completed ("${entry.note}")` : (entry?.isFreeze ? 'Streak Protected ❄️' : 'Completed');
+                            } else if (day.isFuture) {
+                                statusText = 'Future';
+                            } else if (!day.isScheduled) {
+                                statusText = 'Rest day (Not scheduled)';
+                            }
 
                             return (
                                 <div
@@ -157,7 +173,7 @@ const ContributionGrid = ({ entries = [], color = "#8b7cff", onComplete }) => {
                                                 month: 'short',
                                                 day: 'numeric',
                                                 year: 'numeric'
-                                            })}: ${isDone ? (entry?.note ? `Completed ("${entry.note}")` : 'Completed') : (day.isFuture ? 'Future' : 'Not completed')}`,
+                                            })}: ${statusText}`,
                                             x: rect.left + window.scrollX,
                                             y: rect.top + window.scrollY - 30
                                         });
