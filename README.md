@@ -36,52 +36,6 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 
 ---
 
-## 📁 Project Structure
-
-```
-habit-tracker/
-├── Back-end/
-│   ├── middleware/
-│   │   └── authMiddleware.js     # JWT token verification
-│   ├── models/
-│   │   ├── habit.js              # Habit schema with bestStreak, color, entries
-│   │   └── User.js               # User auth schema
-│   ├── routes/
-│   │   ├── authRoutes.js         # Register, Login, /me endpoints
-│   │   └── habit.js              # Habits CRUD, toggle, stats
-│   ├── .env                      # Server configuration
-│   ├── index.js                  # Express app entry point
-│   └── package.json
-│
-├── Front-end/react-app/
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── axios.js          # Configured API client
-│   │   ├── components/
-│   │   │   ├── ContributionGrid.jsx # GitHub-style heatmap
-│   │   │   ├── Footer.jsx
-│   │   │   ├── Habit.jsx         # Habit card with 1-click check-in
-│   │   │   └── Toast.jsx         # Toast notifications
-│   │   ├── context/
-│   │   │   └── ToastContext.js   # Toast state context
-│   │   ├── hooks/
-│   │   │   ├── useTheme.js       # Dark/Light theme manager
-│   │   │   └── useToast.js       # Toast hook
-│   │   ├── pages/
-│   │   │   ├── HabitDetail.jsx   # Deep-dive analytics, heatmap & notes
-│   │   │   ├── HabitTracker.jsx  # Main dashboard
-│   │   │   ├── Login.jsx         # Auth login
-│   │   │   └── Register.jsx      # Account registration
-│   │   ├── App.jsx
-│   │   ├── index.css             # Design tokens & styles
-│   │   └── main.jsx
-│   └── package.json
-│
-└── package.json                  # Root runner scripts
-```
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -142,27 +96,6 @@ npm run dev:backend       # Starts backend with nodemon
 npm run dev:frontend      # Starts frontend Vite dev server
 npm run build:frontend    # Creates production bundle
 ```
-
----
-
-## 📡 API Endpoints Reference
-
-### Authentication Routes
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :---: |
-| `POST` | `/api/auth/register` | Register a new user with email & password | No |
-| `POST` | `/api/auth/login` | Log in and receive JWT token | No |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile | Yes |
-
-### Habit Routes
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :---: |
-| `GET` | `/api/habits` | Retrieve all habits enriched with active streaks & stats | Yes |
-| `POST` | `/api/habits` | Create a new habit with name, category, color, frequency | Yes |
-| `GET` | `/api/habits/:id` | Fetch full habit details, history logs, and 30-day rate | Yes |
-| `PUT` | `/api/habits/:id` | Update habit name, description, category, or color | Yes |
-| `PATCH`| `/api/habits/:id/toggle` | **1-Click toggle today's completion** (with undo support) | Yes |
-| `DELETE`| `/api/habits/:id` | Permanently delete habit and completion history | Yes |
 
 ---
 
