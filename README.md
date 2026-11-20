@@ -1,4 +1,4 @@
-# HabitFlow 🔥 — Full-Stack Habit Tracker
+# HabitFlow — Full-Stack Habit Tracker
 
 A modern, gamified habit tracking application built with the **MERN** stack (MongoDB, Express, React, Node.js). Track your daily habits, build unbreakable streaks, and visualize your consistency with interactive **GitHub-style contribution heatmaps**.
 
@@ -6,21 +6,21 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-- ⚡ **1-Click Instant Check-In & Undo**: Complete habits directly from the dashboard card with confetti celebration animations and full undo support.
-- 🛡️ **Hardened Authentication**: Strict email validation, password security checks, safe credentials handling (zero plaintext logging), and protected routes.
-- 🧮 **Robust Streak Engine**: Calendar-day date math (`YYYY-MM-DD`) that never breaks across timezones or Daylight Saving Time (DST). Computes active streaks and tracks all-time personal records (`bestStreak`).
-- 📊 **Dynamic Dashboard Analytics**: Real-time progress bar, daily completion percentages, active streak highlights, and lifetime check-in metrics.
-- 🎨 **Category & Color Personalization**: Categorize habits (Career, Health, Fitness, Finance, Learning, General) and assign custom theme colors to customize your heatmaps.
-- 🔍 **Search & Category Filters**: Instant debounce search and quick filter pills to organize your habit dashboard.
-- 🔔 **Toast Notification System**: Modern, non-intrusive toast notifications for check-ins, edits, and errors (no native browser alerts).
-- 🌓 **Dark & Light Mode**: Fluid, persistent theme toggle with customized obsidian and light surface tokens.
-- 🗓️ **Interactive GitHub-Style Heatmap**: 52-week contribution grid with hover tooltips, date inspection, and personal reflection note logs.
+- **1-Click Instant Check-In & Undo**: Complete habits directly from the dashboard card with confetti celebration animations and full undo support.
+- **Hardened Authentication**: Strict email validation, password security checks, safe credentials handling (zero plaintext logging), and protected routes.
+- **Robust Streak Engine**: Calendar-day date math (`YYYY-MM-DD`) that never breaks across timezones or Daylight Saving Time (DST). Computes active streaks and tracks all-time personal records (`bestStreak`).
+- **Dynamic Dashboard Analytics**: Real-time progress bar, daily completion percentages, active streak highlights, and lifetime check-in metrics.
+- **Category & Color Personalization**: Categorize habits (Career, Health, Fitness, Finance, Learning, General) and assign custom theme colors to customize your heatmaps.
+- **Search & Category Filters**: Instant debounce search and quick filter pills to organize your habit dashboard.
+- **Toast Notification System**: Modern, non-intrusive toast notifications for check-ins, edits, and errors (no native browser alerts).
+- **Dark & Light Mode**: Fluid, persistent theme toggle with customized obsidian and light surface tokens.
+- **Interactive GitHub-Style Heatmap**: 52-week contribution grid with hover tooltips, date inspection, and personal reflection note logs.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -40,7 +40,7 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -109,6 +109,6 @@ npm run build:frontend    # Creates production bundle
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License.
