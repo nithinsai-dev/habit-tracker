@@ -2,6 +2,8 @@
 
 A modern, gamified habit tracking application built with the **MERN** stack (MongoDB, Express, React, Node.js). Track your daily habits, build unbreakable streaks, and visualize your consistency with interactive **GitHub-style contribution heatmaps**.
 
+**Live link:** [Watch on YouTube](https://youtu.be/unIG7MLNmmE)
+
 ---
 
 ## 🌟 Key Features
@@ -21,6 +23,7 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: React 19 + Vite
 - **Routing**: React Router DOM v7
 - **HTTP Client**: Axios with centralized base URL configuration and 401 interceptors
@@ -28,6 +31,7 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 - **Micro-Interactions**: Canvas-Confetti
 
 ### Backend
+
 - **Runtime**: Node.js (ES Modules)
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
@@ -39,6 +43,7 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** (v18 or newer recommended)
 - **MongoDB** (Local instance running on `mongodb://localhost:27017` or MongoDB Atlas URI)
 
@@ -47,12 +52,14 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
 ### Backend Setup
 
 1. Open a terminal and navigate to `Back-end`:
+
    ```bash
    cd Back-end
    npm install
    ```
 
 2. Verify or create your `.env` file in `Back-end/`:
+
    ```env
    MONGO_URL=mongodb://localhost:27017/habittracker
    JWT_SECRET=your_super_secret_jwt_key
@@ -63,19 +70,21 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
    ```bash
    npm run dev
    ```
-   *The server will start on `http://localhost:3000`.*
+   _The server will start on `http://localhost:3000`._
 
 ---
 
 ### Frontend Setup
 
 1. Open a second terminal and navigate to `Front-end/react-app`:
+
    ```bash
    cd Front-end/react-app
    npm install
    ```
 
 2. (Optional) Create a `.env` file in `Front-end/react-app/`:
+
    ```env
    VITE_API_URL=http://localhost:3000
    ```
@@ -84,13 +93,14 @@ A modern, gamified habit tracking application built with the **MERN** stack (Mon
    ```bash
    npm run dev
    ```
-   *The application will open on `http://localhost:5173`.*
+   _The application will open on `http://localhost:5173`._
 
 ---
 
 ### Convenient Root Scripts
 
 From the repository root, you can also run:
+
 ```bash
 npm run dev:backend       # Starts backend with nodemon
 npm run dev:frontend      # Starts frontend Vite dev server
